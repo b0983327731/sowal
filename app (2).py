@@ -245,4 +245,4 @@ def main():
                 st.rerun()
 
 if __name__ == "__main__":
-    main()
+    main(st.sidebar.image("https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://m2vb9tcztleht2xcmrxanh.streamlit.app", caption="掃描分享族語學習"))
