@@ -7,79 +7,94 @@ from io import BytesIO
 
 # --- 0. 系統配置 ---
 st.set_page_config(
-    page_title="阿美語 - 生活篇", 
+    page_title="阿美語學習 - 高對比清晰版", 
     page_icon="🗣️", 
     layout="centered", 
     initial_sidebar_state="collapsed"
 )
 
-# --- CSS 視覺魔法 ---
+# --- CSS 視覺修正 (解決看不清楚的問題) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap');
 
+    /* 全局背景：極深藍（增加文字浮出感） */
     .stApp { 
-        background-color: #0B0E14;
-        background-image: radial-gradient(circle at 50% 0%, #1A237E 0%, #0B0E14 80%);
+        background-color: #050A18;
         font-family: 'Noto Sans TC', sans-serif;
-        color: #E0F7FA;
+        color: #FFFFFF;
     }
     
+    /* Header 區塊 */
     .header-container {
-        background: rgba(255, 111, 0, 0.1);
-        border: 1px solid #FFAB40;
-        box-shadow: 0 0 15px rgba(255, 171, 64, 0.3);
+        background: rgba(255, 171, 64, 0.15);
+        border: 2px solid #FFAB40;
         border-radius: 15px;
-        padding: 30px;
+        padding: 25px;
         text-align: center;
-        margin-bottom: 40px;
-        backdrop-filter: blur(10px);
+        margin-bottom: 30px;
     }
-    
-    .main-title {
-        font-family: 'Roboto Mono', monospace;
-        color: #FFAB40;
-        font-size: 32px;
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-shadow: 0 0 10px #FFAB40;
-        margin: 0;
-    }
-    
-    .sub-title { color: #B2EBF2; font-size: 18px; margin-top: 10px; }
+    .main-title { color: #FFAB40; font-size: 36px; font-weight: 800; margin: 0; }
+    .sub-title { color: #FFFFFF; font-size: 20px; margin-top: 10px; }
 
+    /* 單字卡片：背景調深，邊框與字體調亮 */
     .word-card {
-        background: rgba(255, 255, 255, 0.05);
+        background: #101625;
+        border: 2px solid #00E5FF;
         border-radius: 12px;
-        padding: 15px 5px;
+        padding: 20px 10px;
         text-align: center;
-        border: 1px solid rgba(255, 171, 64, 0.2);
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
-    .amis-word { font-size: 16px; font-weight: 700; color: #FFFFFF; font-family: 'Roboto Mono', monospace; }
-    .zh-word { font-size: 13px; color: #FFAB40; }
+    .amis-word { font-size: 20px; font-weight: 800; color: #FFFFFF; }
+    .zh-word { font-size: 16px; color: #00E5FF; font-weight: 600; }
 
+    /* 句子區塊：增加左側鮮艷度 */
     .sentence-box {
-        background: linear-gradient(90deg, rgba(255,171,64,0.1) 0%, rgba(0,0,0,0) 100%);
-        border-left: 4px solid #00E5FF;
-        padding: 15px;
+        background: #1A2333;
+        border-left: 6px solid #FF4081;
+        padding: 20px;
         margin-bottom: 15px;
         border-radius: 0 10px 10px 0;
     }
-    .sentence-amis { font-size: 18px; color: #00E5FF; font-weight: 700; margin-bottom: 5px; }
-    .sentence-zh { font-size: 14px; color: #B2EBF2; }
+    .sentence-amis { font-size: 20px; color: #FF80AB; font-weight: 800; }
+    .sentence-zh { font-size: 16px; color: #FFFFFF; font-weight: 500; }
 
-    /* Tab 樣式修正 */
+    /* --- 重點修正：按鈕樣式 (解決截圖中看不清選項的問題) --- */
+    .stButton>button {
+        width: 100%;
+        background-color: #1A2333 !important; /* 深色底 */
+        color: #00E5FF !important;           /* 亮青色字 */
+        border: 2px solid #00E5FF !important; /* 亮青色框 */
+        border-radius: 8px;
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        padding: 12px 0px;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        background-color: #FFAB40 !important; /* 滑鼠移入變橘色 */
+        color: #000000 !important;           /* 字變黑色 */
+        border: 2px solid #FFAB40 !important;
+    }
+
+    /* Tab 分頁標籤修正 */
     .stTabs [data-baseweb="tab"] {
-        color: #FFFFFF !important; 
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #FFFFFF !important;
+        background-color: #101625 !important;
+        border: 1px solid #333;
         padding: 10px 30px;
+        font-size: 18px;
     }
     .stTabs [aria-selected="true"] {
         background-color: #FFAB40 !important;
         color: #000000 !important;
+        font-weight: 800;
     }
+
+    /* 測驗文字修正 */
+    .quiz-question { color: #FFFFFF; font-size: 22px; font-weight: 700; background: #263238; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #444; }
+    .highlight-text { color: #FFEB3B; font-size: 24px; } /* 亮黃色突顯關鍵單字 */
     </style>
     """, unsafe_allow_html=True)
 
@@ -112,20 +127,15 @@ SENTENCES = [
     {"amis": "Ci Panay kako.", "zh": "我是Panay。"},
     {"amis": "Cima kora fafahiyan?", "zh": "那位女生是誰？"},
     {"amis": "Ci Rongac cingra, o widang ako.", "zh": "他叫Rongac，是我的朋友。"},
-    {"amis": "Nga’ay ho kiso Rongac?", "zh": "Rongac你好嗎？"},
-    {"amis": "Mamaan aca, kiso hani?", "zh": "我很好，你呢？"},
     {"amis": "Icowa ko niyaro’ iso Rongac?", "zh": "Rongac你的部落在哪裡？"},
-    {"amis": "I tini i Posong Kakacawan.", "zh": "在臺東縣長濱鄉。"},
     {"amis": "O maan ko tayal iso?", "zh": "你做什麼工作？"},
-    {"amis": "O singsi kako, pasifana’ to caciyaw, o radiw ato serangawan no Pangcah.", "zh": "我是老師，教阿美族族語、歌謠和文化。"},
-    {"amis": "’Aloman ko mitiliday i tira?", "zh": "在那裡有很多學生嗎？"},
+    {"amis": "O singsi kako, pasifana’ to caciyaw.", "zh": "我是老師，教語文。"},
     {"amis": "Hai, saheto o wawa no Pangcah.", "zh": "是的，都是阿美族的孩子。"},
 ]
 
 # --- 2. 語音功能 ---
 def play_audio(text):
     try:
-        # 使用印尼語(id)作為阿美語近似發音的備案
         tts = gTTS(text=text, lang='id')
         fp = BytesIO()
         tts.write_to_fp(fp)
@@ -138,7 +148,6 @@ def play_audio(text):
 def init_quiz():
     st.session_state.quiz_score = 0
     st.session_state.quiz_step = 0
-    # 隨機選3題測驗
     st.session_state.selected_questions = random.sample(VOCABULARY, 3)
 
 if 'quiz_step' not in st.session_state:
@@ -149,7 +158,7 @@ def main():
     st.markdown("""
     <div class="header-container">
         <h1 class="main-title">Cima ko ngangan iso?</h1>
-        <div class="sub-title">你叫什麼名字？</div>
+        <div class="sub-title">你叫什麼名字？ - 清晰對比學習版</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -157,61 +166,56 @@ def main():
     
     with tab1:
         st.markdown("### 🏷️ 重點單字")
-        cols = st.columns(3)
+        cols = st.columns(2) # 改為 2 欄位，讓單字更顯眼
         for idx, item in enumerate(VOCABULARY):
-            with cols[idx % 3]:
+            with cols[idx % 2]:
                 st.markdown(f"""
                 <div class="word-card">
-                    <div style="font-size:24px;">{item['emoji']}</div>
+                    <div style="font-size:30px;">{item['emoji']}</div>
                     <div class="amis-word">{item['amis']}</div>
                     <div class="zh-word">{item['zh']}</div>
                 </div>
                 """, unsafe_allow_html=True)
-                if st.button(f"🔊", key=f"voc_{idx}"):
+                if st.button(f"🔊 播放 {item['amis']}", key=f"voc_{idx}"):
                     play_audio(item['amis'])
-
-        st.markdown("---")
-        st.markdown("### 💬 生活對話")
-        for idx, s in enumerate(SENTENCES):
-            st.markdown(f"""
-            <div class="sentence-box">
-                <div class="sentence-amis">{s['amis']}</div>
-                <div class="sentence-zh">{s['zh']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button(f"播放語音", key=f"sen_{idx}"):
-                play_audio(s['amis'])
 
     with tab2:
         if st.session_state.quiz_step < 3:
             q_item = st.session_state.selected_questions[st.session_state.quiz_step]
-            st.markdown(f"### 任務 {st.session_state.quiz_step + 1}: 翻譯辨識")
-            st.info(f"請問「 **{q_item['amis']}** 」的意思是？")
+            st.markdown(f"## 任務 {st.session_state.quiz_step + 1}: 翻譯辨識")
+            
+            # 使用更清晰的題目樣式
+            st.markdown(f"""
+            <div class="quiz-question">
+                請問 <span class="highlight-text">「 {q_item['amis']} 」</span> 的意思是什麼？
+            </div>
+            """, unsafe_allow_html=True)
             
             # 產生選項
             wrong_opts = [v['zh'] for v in VOCABULARY if v['zh'] != q_item['zh']]
             options = random.sample(wrong_opts, 2) + [q_item['zh']]
             random.shuffle(options)
             
+            # 選項垂直排列，更好點擊
             for opt in options:
-                if st.button(opt, key=f"opt_{opt}"):
+                if st.button(opt, key=f"opt_{opt}_{st.session_state.quiz_step}"):
                     if opt == q_item['zh']:
                         st.success("Tatamako! (正確!)")
                         st.session_state.quiz_score += 1
                         time.sleep(1)
                     else:
-                        st.error(f"錯誤，答案是: {q_item['zh']}")
+                        st.error(f"答錯囉！正確答案是: {q_item['zh']}")
                         time.sleep(1)
                     st.session_state.quiz_step += 1
                     st.rerun()
         else:
             st.markdown(f"""
-            <div style="text-align:center; padding:40px; border:2px solid #FFAB40; border-radius:20px;">
-                <h2 style="color:#FFAB40;">測驗完成！</h2>
-                <p style="font-size:24px;">得分：{st.session_state.quiz_score} / 3</p>
+            <div style="text-align:center; padding:40px; border:4px solid #FFAB40; border-radius:20px; background:#101625;">
+                <h2 style="color:#FFAB40;">測驗結束</h2>
+                <p style="font-size:30px; color:#FFFFFF;">得分：{st.session_state.quiz_score} / 3</p>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("重新挑戰"):
+            if st.button("重新開始任務"):
                 init_quiz()
                 st.rerun()
 
